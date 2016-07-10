@@ -94,6 +94,7 @@ public class BlankFragment extends Fragment {
     FloatingActionButton button;
     TextView like,nope;
     Animation in,out;
+    ArrayList<String> otherUsersKey;
 
     public BlankFragment() {
         // Required empty public constructor
@@ -195,17 +196,23 @@ public class BlankFragment extends Fragment {
 
             @Override
             public void onLeftCardExit(Object o) {
+
                 out = new AlphaAnimation(1.0f, 0.0f);
                 out.setDuration(2000);
                 nope.startAnimation(out);
                 nope.setVisibility(View.INVISIBLE);
                 mGridData.remove(0);
+
                 gridAdapter.notifyDataSetChanged();
 
             }
 
             @Override
             public void onRightCardExit(Object o) {
+
+                bookmarkKey(otherUsersKey.get(0));
+
+                otherUsersKey.remove(0);
                 out = new AlphaAnimation(1.0f, 0.0f);
                 out.setDuration(2000);
                 like.startAnimation(out);
@@ -229,6 +236,11 @@ public class BlankFragment extends Fragment {
 
             }
         });
+    }
+
+
+    private void bookmarkKey(String key) {
+        mDatabase.child("liked").child(userId.getUserId()).child(key).setValue(true);
     }
 
 
@@ -301,7 +313,7 @@ public class BlankFragment extends Fragment {
     }
 
     private void showOnlyClosedUser() {
-
+        otherUsersKey = new ArrayList<>();
         mDatabase.child("users").orderByKey().addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -316,6 +328,7 @@ public class BlankFragment extends Fragment {
                     for (int j= 0;j<closedUsers.size();j++) {
                         if (snapshot.getKey().equals(closedUsers.get(j))) {
 
+                            otherUsersKey.add(snapshot.getKey());
                             HashMap<String, Object> data = (HashMap<String, Object>) snapshot.getValue();
                             String imageUrl = (String) data.get("imageUrl");
                             String name = (String) data.get("userName");
