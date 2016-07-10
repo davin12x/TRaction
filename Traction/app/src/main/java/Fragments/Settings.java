@@ -86,7 +86,12 @@ public class Settings extends Fragment {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Fragment fragment = new Bookmarks();
+                android.app.FragmentManager fragmentManager = getActivity().getFragmentManager();
+                android.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.replace(R.id.fragment_container1, fragment);
+                fragmentTransaction.commit();
             }
         });
 
